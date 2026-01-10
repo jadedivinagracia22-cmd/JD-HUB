@@ -1,0 +1,262 @@
+-- JD-HUB | Fanmade Blox Fruits
+-- Rayfield GUI | Discord Link Included
+-- Delta executor ready
+-- No key system
+
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "JD-HUB",
+    LoadingTitle = "JD-HUB",
+    LoadingSubtitle = "Fanmade Blox Fruits Test",
+    ConfigurationSaving = {Enabled = true, FolderName = "JD-HUB", FileName = "Settings"},
+    Discord = "https://discord.gg/TmYWHdk6W",
+    KeySystem = false
+})
+
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local root = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Globals
+getgenv().Flying = false
+getgenv().RunSpeed = 16
+getgenv().JumpPower = 50
+getgenv().FastAttack = false
+getgenv().AutoAttack = false
+getgenv().WeaponChoice = "Melee" -- Default for Tab1/Tab4 farming/raid
+getgenv().CurrentSea = 1 -- Example: 1=1st, 2=2nd, 3=3rd
+
+-- =========================
+-- Utility Functions
+-- =========================
+local function flyAbove(target, height)
+    if target and target.PrimaryPart then
+        root.CFrame = CFrame.new(target.PrimaryPart.Position + Vector3.new(0, height or 20, 0))
+    end
+end
+
+local function useWeaponOrFruit(target)
+    -- auto attack logic based on WeaponChoice
+    if getgenv().WeaponChoice == "Melee" then
+        -- insert melee attack function here
+    elseif getgenv().WeaponChoice == "Sword" then
+        -- insert sword attack function here
+    elseif getgenv().WeaponChoice == "Fruit" then
+        -- insert fruit attack function here
+    end
+end
+
+-- =========================
+-- TAB 1: Auto Farm
+-- =========================
+if true then
+    local Tab1 = Window:CreateTab("Auto Farm", 4483362458)
+    
+    getgenv().AutoFarm = false
+    Tab1:CreateToggle({
+        Name = "Auto Farm NPCs",
+        CurrentValue = false,
+        Callback = function(val)
+            getgenv().AutoFarm = val
+            if val then
+                task.spawn(function()
+                    while getgenv().AutoFarm do
+                        local npc = Workspace:FindFirstChild("NPC") -- placeholder
+                        if npc then
+                            flyAbove(npc, 20)
+                            if getgenv().AutoAttack then
+                                useWeaponOrFruit(npc)
+                            end
+                        end
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+    
+    Tab1:CreateDropdown({
+        Name = "Choose Weapon/Fruit",
+        Options = {"Melee", "Sword", "Fruit"},
+        CurrentOption = "Melee",
+        Callback = function(option)
+            getgenv().WeaponChoice = option
+        end
+    })
+    
+    -- Add toggles for Sword, Guns, Fighting Styles training (simplified)
+end
+
+-- =========================
+-- TAB 2: Auto V4 / Quest / Training
+-- =========================
+if getgenv().CurrentSea > 1 then
+    local Tab2 = Window:CreateTab("Auto V4 / Quest", 4483362458)
+    
+    -- Auto V4 quests
+    getgenv().AutoV4 = false
+    Tab2:CreateToggle({
+        Name = "Auto V4 Quests",
+        CurrentValue = false,
+        Callback = function(val)
+            getgenv().AutoV4 = val
+        end
+    })
+    
+    -- Auto Activate V3 only when all players in Temple of Time use it
+    getgenv().AutoV3 = false
+    Tab2:CreateToggle({
+        Name = "Auto Activate V3",
+        CurrentValue = false,
+        Callback = function(val)
+            getgenv().AutoV3 = val
+            if val then
+                task.spawn(function()
+                    while getgenv().AutoV3 do
+                        -- pseudo logic: check all players in "Temple of Time" using V3
+                        local allUsingV3 = true -- placeholder
+                        if allUsingV3 then
+                            print("Activating V3")
+                            -- insert V3 activation logic here
+                        end
+                        task.wait(0.5)
+                    end
+                end)
+            end
+        end
+    })
+    
+    -- Auto Find Fruits and Teleports (Top Tree, Lever, Door)
+end
+
+-- =========================
+-- TAB 3: Player Spy / PvP
+-- =========================
+do
+    local Tab3 = Window:CreateTab("PvP / Spy", 4483362458)
+    
+    -- Auto Teleport to Player
+    getgenv().SpyPlayer = nil
+    Tab3:CreateDropdown({
+        Name = "Select Player",
+        Options = function()
+            local list = {}
+            for i,v in pairs(Players:GetPlayers()) do
+                if v ~= player then table.insert(list,v.Name) end
+            end
+            return list
+        end,
+        CurrentOption = "",
+        Callback = function(option)
+            getgenv().SpyPlayer = Players:FindFirstChild(option)
+        end
+    })
+    
+    -- Auto PvP / Combo / Attack / Shield / Flight / Speed
+end
+
+-- =========================
+-- TAB 4: Auto Raid / Auto Chips
+-- =========================
+if getgenv().CurrentSea > 1 then
+    local Tab4 = Window:CreateTab("Auto Raid / Chips", 4483362458)
+    
+    getgenv().AutoRaid = false
+    Tab4:CreateToggle({
+        Name = "Auto Start Raid",
+        CurrentValue = false,
+        Callback = function(val)
+            getgenv().AutoRaid = val
+            if val then
+                task.spawn(function()
+                    while getgenv().AutoRaid do
+                        local boss = Workspace:FindFirstChild("RaidBoss") -- placeholder
+                        if boss then
+                            flyAbove(boss, 20)
+                            useWeaponOrFruit(boss)
+                        end
+                        task.wait(0.3)
+                    end
+                end)
+            end
+        end
+    })
+    
+    Tab4:CreateDropdown({
+        Name = "Choose Weapon/Fruit",
+        Options = {"Melee", "Sword", "Fruit"},
+        CurrentOption = "Melee",
+        Callback = function(option)
+            getgenv().WeaponChoice = option
+        end
+    })
+end
+
+-- =========================
+-- Global Sliders
+-- =========================
+Window:CreateSlider({
+    Name = "Run Speed",
+    Range = {16,500},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 16,
+    Callback = function(val)
+        getgenv().RunSpeed = val
+        humanoid.WalkSpeed = val
+    end
+})
+
+Window:CreateSlider({
+    Name = "Jump Power",
+    Range = {50,300},
+    Increment = 1,
+    Suffix = "Power",
+    CurrentValue = 50,
+    Callback = function(val)
+        getgenv().JumpPower = val
+        humanoid.JumpPower = val
+    end
+})
+
+-- =========================
+-- Fast Attack Toggle
+-- =========================
+Window:CreateToggle({
+    Name = "Fast Attack",
+    CurrentValue = false,
+    Callback = function(val)
+        getgenv().FastAttack = val
+    end
+})
+
+-- =========================
+-- Auto Attack Toggle
+-- =========================
+Window:CreateToggle({
+    Name = "Auto Attack",
+    CurrentValue = false,
+    Callback = function(val)
+        getgenv().AutoAttack = val
+    end
+})
+
+-- =========================
+-- Auto Flying Loop
+-- =========================
+RunService.RenderStepped:Connect(function()
+    if getgenv().Flying then
+        root.Velocity = Vector3.new(0,0,0)
+    end
+end)
